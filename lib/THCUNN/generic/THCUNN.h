@@ -1536,4 +1536,11 @@ TH_API void THNN_(VolumetricUpSamplingTrilinear_updateGradInput)(
                   int outputHeight,
                   int outputWidth);
 
+TH_API void THNN_(CrossbarCompute_updateOutput)(
+		THCState *state,
+		THCTensor *output,
+		THCTensor *input,
+		THCTensor *weight,
+		int accumN);
+
 #endif
