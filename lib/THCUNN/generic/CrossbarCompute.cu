@@ -38,7 +38,7 @@ void THNN_(CrossbarCompute_updateOutput)(
     
      
     // Execute the kernel
-    cunn_CrossbarCompute_updateOutput_kernel<real><<<grid, threads>>>(
+    cunn_CrossbarCompute_updateOutput_kernel<real, accreal><<<grid, threads>>>(
           THCTensor_(data)(state, output),
           THCTensor_(data)(state, input),
           THCTensor_(data)(state, weight),
