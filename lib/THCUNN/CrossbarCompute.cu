@@ -43,7 +43,7 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
       if(accumCount >= accumN) {
         // update outputs
         if((INrow<nBatch) && (OUTrow<nY_OUT) && (Wcol<nOut)) { // shut down kernels that are not in the range
-          OUT[INrow*nY_OUT*nOut + OUTrow*nOut + Wcol] = temp;
+          OUT[INrow*nY_OUT*nOut + OUTrow*nOut + Wcol] = ScalarConvert<AccumT, T>::to(temp);
         }
         // update or reset states
         OUTrow += 1;
