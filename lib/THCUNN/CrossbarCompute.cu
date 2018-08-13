@@ -32,8 +32,8 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
   while(i < nIn){
     // copy the data from global memory to shared memory
     INs[ty][tx] = IN[INrow*nIn + tx + i];
-    Ws[ty][tx] = W[0];
-//     Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
+//     Ws[ty][tx] = W[0];
+    Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
 //     Ws[ty][tx] = W[(i+ty)*nOut + Wrow];
     __syncthreads();
     
