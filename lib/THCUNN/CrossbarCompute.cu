@@ -55,3 +55,6 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
     i += BLOCK_SIZE;
   }
 }
+
+#include "generic/CrossbarCompute.cu"
+#include "THCGenerateFloatTypes.h"
