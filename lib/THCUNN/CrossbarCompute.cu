@@ -6,14 +6,14 @@
 #define BLOCK_SIZE 16
 
 template <typename T>
-__global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, int accumN, int nBatch, int nIn, int nOut)
+__global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, int accumN, long nBatch, long nIn, long nOut)
 {
   // index of output matrix
   int Wcol = blockIdx.x * blockDim.x + threadIdx.x;
   int INrow = blockIdx.y * blockDim.y + threadIdx.y;
   
   // y-dim of OUT
-  int nY_OUT = nIn / accumN; // nIN should be divisible by accumN
+  long nY_OUT = nIn / accumN; // nIN should be divisible by accumN
   
   // thread id
   int tx = threadIdx.x;
@@ -27,8 +27,8 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
   // thus, have to repeat on size_vector(nIn) elements
   T temp = 0;
   unsigned int accumCount = 0;
-  unsigned int OUTrow = 0;
-  unsigned int i = 0;
+  long OUTrow = 0;
+  long i = 0;
   while(i < nIn){
     // copy the data from global memory to shared memory
     INs[ty][tx] = IN[INrow*nIn + tx + i];
