@@ -2,7 +2,7 @@ package = "cunn"
 version = "1.0-0"
 
 source = {
-   url = "git://github.com/torch/cunn.git",
+   url = "git://github.com/YulhwaKim/cunn.git",
    tag = "1.0-0"
 }
 
@@ -10,7 +10,7 @@ description = {
    summary = "Torch CUDA Neural Network Implementation",
    detailed = [[
    ]],
-   homepage = "https://github.com/torch/cunn",
+   homepage = "https://github.com/YulhwaKim/cunn",
    license = "BSD"
 }
 
