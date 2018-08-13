@@ -32,7 +32,8 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
   while(i < nIn){
     // copy the data from global memory to shared memory
     INs[ty][tx] = IN[INrow*nIn + tx + i];
-    Ws[ty][tx] = W[(i+ty)*nOut + Wcol];
+    Ws[ty][tx] = W[Wcol*nIn + (i+ty)];
+//     Ws[ty][tx] = W[(i+ty)*nOut + Wcol];
     __syncthreads();
     
     // compute element-size multiplication
