@@ -5,7 +5,7 @@
 
 #define BLOCK_SIZE 16
 
-template <typename T>
+template <typename T, typename AccumT>
 __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, int accumN, long nBatch, long nIn, long nOut)
 {
   // index of output matrix
@@ -25,7 +25,7 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
   
   // each thread do the vector-vector multiplication
   // thus, have to repeat on size_vector(nIn) elements
-  T temp = 0.0;
+  AccumT temp = 0;
   unsigned int accumCount = 0;
   long OUTrow = 0;
   long i = 0;
