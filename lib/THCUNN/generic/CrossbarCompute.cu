@@ -23,10 +23,10 @@ void THNN_(CrossbarCompute_updateOutput)(
   
   if (ndims == 1) {
   }
-  else if (dim == 2) {
+  else if (ndims == 2) {
     nframe = THCTensor_(size)(state, input, 0);
     nIn = THCTensor_(size)(state, input, 1);
-    nOut = THCTensor_(size)(weight, 0);
+    nOut = THCTensor_(size)(state, weight, 0);
     nPsum = nIn / accumN;
     // resize output and make input continuous
     THCTensor_(resize3d)(state, output, nframe, nOut, nPsum);
@@ -36,11 +36,9 @@ void THNN_(CrossbarCompute_updateOutput)(
     dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
     dim3 grid((nOut+threads.x-1)/threads.x, (nframe+threads.y-1)/threads.y);
     
-    // error checking
-    cudaError_t err;
-    
+     
     // Execute the kernel
-    cudnn_CrossbarCompute_updateOutput_kernel<real><<<grid, threads>>>(
+    cunn_CrossbarCompute_updateOutput_kernel<real><<<grid, threads>>>(
           THCTensor_(data)(state, output),
           THCTensor_(data)(state, input),
           THCTensor_(data)(state, weight),
@@ -49,6 +47,16 @@ void THNN_(CrossbarCompute_updateOutput)(
           nIn,
           nOut);
   }
+  
+  // error checking
+  cudaError errcode = cudaGetLastError();
+  if (errcode != cudaSuccess)
+  {
+    THError(cudaGetErrorString(errcode));
+  }
+
+  // free input
+  THCTensor_(free)(state, input);
 }
 
 
