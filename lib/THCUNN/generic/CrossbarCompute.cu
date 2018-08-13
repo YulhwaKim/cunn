@@ -40,8 +40,14 @@ void THNN_(CrossbarCompute_updateOutput)(
     cudaError_t err;
     
     // Execute the kernel
-    
-    
+    cudnn_CrossbarCompute_updateOutput_kernel<real><<<grid, threads>>>(
+          THCTensor_(data)(state, output),
+          THCTensor_(data)(state, input),
+          THCTensor_(data)(state, weight),
+          accumN,
+          nframe,
+          nIn,
+          nOut);
   }
 }
 
