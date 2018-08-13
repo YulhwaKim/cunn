@@ -9,7 +9,7 @@ template <typename T, typename AccumT>
 __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, int accumN, long nBatch, long nIn, long nOut)
 {
   // index of output matrix
-  int Wcol = blockIdx.x * blockDim.x + threadIdx.x;
+  int Wrow = blockIdx.x * blockDim.x + threadIdx.x;
   int INrow = blockIdx.y * blockDim.y + threadIdx.y;
   
   // y-dim of OUT
@@ -33,8 +33,8 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
     // copy the data from global memory to shared memory
     INs[ty][tx] = IN[INrow*nIn + tx + i];
     Ws[ty][tx] = W[0];
-//     Ws[ty][tx] = W[Wcol*nIn + (i+ty)];
-//     Ws[ty][tx] = W[(i+ty)*nOut + Wcol];
+//     Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
+//     Ws[ty][tx] = W[(i+ty)*nOut + Wrow];
     __syncthreads();
     
     // compute element-size multiplication
@@ -44,9 +44,9 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
       accumCount += 1;
       if(accumCount >= accumN) {
         // update outputs
-        if((INrow<nBatch) && (OUTcol<nY_OUT) && (Wcol<nOut)) { // shut down kernels that are not in the range
-          OUT[INrow*nY_OUT*nOut + Wcol*nY_OUT + OUTcol] = ScalarConvert<AccumT, T>::to(temp);
-//           OUT[INrow*nY_OUT*nOut + OUTcol*nOut + Wcol] = ScalarConvert<AccumT, T>::to(temp);
+        if((INrow<nBatch) && (OUTcol<nY_OUT) && (Wrow<nOut)) { // shut down kernels that are not in the range
+          OUT[INrow*nY_OUT*nOut + Wrow*nY_OUT + OUTcol] = ScalarConvert<AccumT, T>::to(temp);
+//           OUT[INrow*nY_OUT*nOut + OUTcol*nOut + Wrow] = ScalarConvert<AccumT, T>::to(temp);
         }
         // update or reset states
         OUTcol += 1;
