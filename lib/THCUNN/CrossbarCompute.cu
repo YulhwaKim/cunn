@@ -27,7 +27,7 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
   // thus, have to repeat on size_vector(nIn) elements
   AccumT temp = 0;
   unsigned int accumCount = 0;
-  long OUTrow = 0;
+  long OUTcol = 0;
   long i = 0;
   while(i < nIn){
     // copy the data from global memory to shared memory
@@ -44,12 +44,12 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
       accumCount += 1;
       if(accumCount >= accumN) {
         // update outputs
-        if((INrow<nBatch) && (OUTrow<nY_OUT) && (Wcol<nOut)) { // shut down kernels that are not in the range
-          OUT[INrow*nY_OUT*nOut + Wcol*nY_OUT + OUTrow] = ScalarConvert<AccumT, T>::to(temp);
-//           OUT[INrow*nY_OUT*nOut + OUTrow*nOut + Wcol] = ScalarConvert<AccumT, T>::to(temp);
+        if((INrow<nBatch) && (OUTcol<nY_OUT) && (Wcol<nOut)) { // shut down kernels that are not in the range
+          OUT[INrow*nY_OUT*nOut + Wcol*nY_OUT + OUTcol] = ScalarConvert<AccumT, T>::to(temp);
+//           OUT[INrow*nY_OUT*nOut + OUTcol*nOut + Wcol] = ScalarConvert<AccumT, T>::to(temp);
         }
         // update or reset states
-        OUTrow += 1;
+        OUTcol += 1;
         temp = 0;
         accumCount = 0;
       }
