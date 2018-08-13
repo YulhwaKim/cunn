@@ -25,7 +25,7 @@ __global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, in
   
   // each thread do the vector-vector multiplication
   // thus, have to repeat on size_vector(nIn) elements
-  T temp = 0;
+  T temp = 0.0;
   unsigned int accumCount = 0;
   long OUTrow = 0;
   long i = 0;
