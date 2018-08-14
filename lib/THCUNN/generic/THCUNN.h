@@ -1543,4 +1543,12 @@ TH_API void THNN_(CrossbarCompute_updateOutput)(
 		THCTensor *weight,
 		int accumN);
 
+TH_API void THNN_(VariationModeling_updateOutput)(
+          	THCState *state,
+          	THCTensor *output,
+          	THCTensor *input,
+          	THCTensor *ptable,
+          	int accumN,
+          	THCTensor *ref);
+
 #endif
