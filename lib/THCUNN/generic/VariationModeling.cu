@@ -44,7 +44,7 @@ void THNN_(VariationModeling_updateOutput)(
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid((xdim + threads.x - 1)/threads.x, (ydim + threads.y - 1)/threads.y); 
 
-  cunn_VariationModeling_updateOutput_kernel<real, accreal><<<grid, threads, nRow*nCol*sizeof(real)>>(
+  cunn_VariationModeling_updateOutput_kernel<real, accreal><<<grid, threads, nRow*nCol*sizeof(real)>>>(
           THCTensor_(data)(state, output),
           THCTensor_(data)(state, input),
           xdim,
