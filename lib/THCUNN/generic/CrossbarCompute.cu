@@ -21,7 +21,7 @@ void THNN_(CrossbarCompute_updateOutput)(
           
   // check if BLOCK_SIZE is properly set
   int check = BLOCK_SIZE;
-  prinf("BLOCK_SIZE shoulbe be 16 and it is '%d'\n", check);
+  printf("BLOCK_SIZE shoulbe be 16 and it is '%d'\n", check);
   
   int ndims = THCTensor_(nDimension)(state, input);
   
