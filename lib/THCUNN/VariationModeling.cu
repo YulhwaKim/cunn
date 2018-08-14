@@ -37,7 +37,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   }
   __syncthreads();
   
-  if((DATAcol >= xdim) || (DATArow >= ydim)) {
+  if((INcol >= xdim) || (INrow >= ydim)) {
     return ;
   }
   
