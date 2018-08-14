@@ -5,7 +5,7 @@
 
 #define BLOCK_SIZE 32
 
-template <typename T, typename AccumT>
+template <typename T>
 __global__ void cunn_VariationModeling_updateOutput_kernel(
   T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN, T *REF) // REF is for debugging
 {
@@ -22,8 +22,8 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   
   // dynamic shared memory allocation for PTABLE
 //   extern __shared__ T PTABLEs [];
-  SharedMem<AccumT> smem;
-  AccumT *PTABLEs = smem.getPointer();
+  SharedMem<T> smem;
+  T *PTABLEs = smem.getPointer();
 
   
   // move PTABLE into shared memory
@@ -53,7 +53,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
     int rowIdx = (value + accumN) / 2;
     // STEP2. generate reference point
     T refpoint = REF[INidx];
-    // AccumT refpoint = rand()/(AccumT)RAND_MAX;
+    // T refpoint = rand()/(T)RAND_MAX;
     // STEP3. find the column index of probability table and change the data
     for(int j=0; j<nCol; j++) {
       T prob = PTABLEs[rowIdx*nCol + j];
