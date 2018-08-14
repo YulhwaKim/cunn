@@ -16,15 +16,18 @@ void THNN_(VariationModeling_updateOutput)(
   
   // get parameters
   int ndims = THCTensor_(nDimension)(state,input);
+  long zdim = 1;
+  long ydim = 1;
+  long xdim = 1;
   if (ndims == 2) {
-    long zdim = 1;
-    long ydim = THCTensor_(size)(state, input, 0);
-    long xdim = THCTensor_(size)(state, input, 1);
+    zdim = 1;
+    ydim = THCTensor_(size)(state, input, 0);
+    xdim = THCTensor_(size)(state, input, 1);
   }
   if (ndims == 3) {
-    long zdim = THCTensor_(size)(state, input, 0);
-    long ydim = THCTensor_(size)(state, input, 1);
-    long xdim = THCTensor_(size)(state, input, 2);
+    zdim = THCTensor_(size)(state, input, 0);
+    ydim = THCTensor_(size)(state, input, 1);
+    xdim = THCTensor_(size)(state, input, 2);
   }
   long nRow = THCTensor_(size)(state, ptable, 0);
   long nCol = THCTensor_(size)(state, ptable, 1);
