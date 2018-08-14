@@ -46,16 +46,16 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   for(long i=0; i<zdim; i++) {
    // STEP1. get data and row index of probability table
     long INidx = i*xdim*ydim + INrow*xdim + INcol;
-    int value = (int)IN[INidx];
+    int value = ScalarConvert<T, int>::to(IN[INidx]);
     int rowIdx = (value + accumN) / 2;
     // STEP2. generate reference point
     AccumT refpoint = REF[INidx];
     // AccumT refpoint = rand()/(AccumT)RAND_MAX;
     // STEP3. find the column index of probability table and change the data
-    for(long j=0; j<nCol; j++) {
+    for(int j=0; j<nCol; j++) {
       AccumT prob = PTABLEs[rowIdx*nCol + j];
       if(((prob > 0) && (prob > refpoint)) || (j==nCol-1)) {
-        OUT[INidx] = (AccumT)value + 2*(j - transitionWindow);
+        OUT[INidx] = ScalarConvert<int, T>::to(value + 2*(j - transitionWindow));
         break;
       }
     }
