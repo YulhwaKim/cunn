@@ -21,7 +21,10 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   long transitionWindow = (nCol-1)/2;
   
   // dynamic shared memory allocation for PTABLE
-  extern __shared__ T PTABLEs [];
+//   extern __shared__ T PTABLEs [];
+  SharedMem<AccumT> smem;
+  AccumT *PTABLEs = smem.getPointer();
+
   
   // move PTABLE into shared memory
   int col_iter = (nCol + blockDim.x - 1) / blockDim.x;
