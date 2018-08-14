@@ -18,6 +18,10 @@ void THNN_(CrossbarCompute_updateOutput)(
   long nIn = 0;
   long nOut = 0;
   long nPsum = 0;
+          
+  // check if BLOCK_SIZE is properly set
+  int check = BLOCK_SIZE;
+  prinf("BLOCK_SIZE shoulbe be 16 and it is '%d'\n", check);
   
   int ndims = THCTensor_(nDimension)(state, input);
   
