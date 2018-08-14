@@ -3,61 +3,66 @@
 #include "THCHalfAutoNumerics.cuh"
 #include "SharedMem.cuh"
 
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 32
 
 template <typename T, typename AccumT>
-__global__ void cunn_CrossbarCompute_updateOutput_kernel(T *OUT, T *IN, T *W, int accumN, long nBatch, long nIn, long nOut)
+__global__ void cunn_VariationModeling_updateOutput_kernel(
+  T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN, T *REF) // REF is for debugging
 {
-  // index of output matrix
-  int Wrow = blockIdx.x * blockDim.x + threadIdx.x;
+  // index of data 
+  int INcol = blockIdx.x * blockDim.x + threadIdx.x;
   int INrow = blockIdx.y * blockDim.y + threadIdx.y;
-  
-  // y-dim of OUT
-  long nY_OUT = nIn / accumN; // nIN should be divisible by accumN
   
   // thread id
   int tx = threadIdx.x;
   int ty = threadIdx.y;
   
-  // used BLOCK_SIZE as the TILE size
-  __shared__ T INs[BLOCK_SIZE][BLOCK_SIZE];
-  __shared__ T Ws[BLOCK_SIZE][BLOCK_SIZE];
+  // transitionWindow
+  long transitionWindow = (nCol-1)/2;
   
-  // each thread do the vector-vector multiplication
-  // thus, have to repeat on size_vector(nIn) elements
-  AccumT temp = 0;
-  unsigned int accumCount = 0;
-  long OUTcol = 0;
-  long i = 0;
-  while(i < nIn){
-    // copy the data from global memory to shared memory
-    INs[ty][tx] = IN[INrow*nIn + tx + i];
-//     Ws[ty][tx] = W[0];
-    Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
-//     Ws[ty][tx] = W[(i+ty)*nOut + Wrow];
-    __syncthreads();
-    
-    // compute element-size multiplication
-    for(unsigned int j=0; j<BLOCK_SIZE; j++) {
-      // do the accumulation
-      temp += INs[ty][j] * Ws[j][tx];
-      accumCount += 1;
-      if(accumCount >= accumN) {
-        // update outputs
-        if((INrow<nBatch) && (OUTcol<nY_OUT) && (Wrow<nOut)) { // shut down kernels that are not in the range
-          OUT[INrow*nY_OUT*nOut + Wrow*nY_OUT + OUTcol] = ScalarConvert<AccumT, T>::to(temp);
-//           OUT[INrow*nY_OUT*nOut + OUTcol*nOut + Wrow] = ScalarConvert<AccumT, T>::to(temp);
-        }
-        // update or reset states
-        OUTcol += 1;
-        temp = 0;
-        accumCount = 0;
+  // dynamic shared memory allocation for PTABLE
+  extern __shared__ T PTABLEs [];
+  
+  // move PTABLE into shared memory
+  int col_iter = (nCol + blockDim.x - 1) / blockDim.x;
+  int row_iter = (nRow + blockDim.y - 1) / blockDim.y;
+  for(unsigned int i=0; i<row_iter; i++) {
+   for(unsigned int j=0; j<col_iter; j++) {
+     int xIdx = j*blockDim.x + tx;
+     int yIdx = i*blockDim.y + ty;
+     if((xIdx < nCol) && (yIdx < nRow)) {
+       PTABLEs[yIdx*nCol + xIdx] = PTABLE[yIdx*nCol + xIdx];
+     }
+   }
+  }
+  __syncthreads();
+  
+  if((DATAcol >= xdim) || (DATArow >= ydim)) {
+    return ;
+  }
+  
+  // each thread models variation on given 2D matrix
+  // thus, have to repeat on z-dim elements
+  for(long i=0; i<zdim; i++) {
+   // STEP1. get data and row index of probability table
+    long INidx = i*xdim*ydim + INrow*xdim + INcol;
+    int value = (int)IN[INidx];
+    int rowIdx = (value + accumN) / 2;
+    // STEP2. generate reference point
+    AccumT refpoint = REF[INidx];
+    // AccumT refpoint = rand()/(AccumT)RAND_MAX;
+    // STEP3. find the column index of probability table and change the data
+    for(long j=0; j<nCol; j++) {
+      AccumT prob = PTABLEs[rowIdx*nCol + j];
+      if(((prob > 0) && (prob > refpoint)) || (j==nCol-1)) {
+        OUT[INidx] = (AccumT)value + 2*(j - transitionWindow);
+        break;
       }
     }
     __syncthreads();
-    i += BLOCK_SIZE;
   }
+  
 }
 
-#include "generic/CrossbarCompute.cu"
+#include "generic/VariationModeling.cu"
 #include "THCGenerateFloatTypes.h"
