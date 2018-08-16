@@ -37,8 +37,8 @@ void THNN_(VariationModeling_updateOutput)(
   input = THCTensor_(newContiguous)(state, input);
   
    // check if BLOCK_SIZE is properly set
-  int check = BLOCK_SIZE;
-  printf("BLOCK_SIZE shoulbe be 32 and it is '%d'\n", check);
+//   int check = BLOCK_SIZE;
+//   printf("BLOCK_SIZE shoulbe be 32 and it is '%d'\n", check);
   
   // set dimension of block and grid
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
