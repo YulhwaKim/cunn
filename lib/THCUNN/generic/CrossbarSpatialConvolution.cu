@@ -104,17 +104,35 @@ void THNN_(CrossbarSpatialConvolution_updateoutput)(
   THCTensor *input_n = THCTensor_(new)(state);
   THCTensor *output_n = THCTensor_(new)(state);
   
+  // set dimension of block and grid
+  dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+  dim3 grid((nOutputPlane+threads.x-1)/threads.x, (nOutSpatial+threads.y-1)/threads.y);
+  
   // For each elt in batch, do:
   for (long elt = 0; elt < batchSize; elt ++) {
     // Matrix multiply per output:
     THCTensor_(select)(state, input_n, input, 0, elt);
     THCTensor_(select)(state, output_n, output, 0, elt);
     
-    template <typename T, typename AccumT>
-__global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
-  T *OUT, T *IN, T *W, int accumN, long nIn, long nOutSpatial, long nOutputPlane, long nPsum)
+    // Extract columns:
+    im2col(
+      THCState_getCurrentStream(state),
+      THCTensor_(data)(state, input_n),
+      nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
+      1, 1, THCTensor_(data)(state, columns)
+    );
+    
+    // Execute the kernel
+    cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel<real, accreal><<<grid, threads>>>(
+          THCTensor_(data)(state, output_n),
+          THCTensor_(data)(state, columns),
+          THCTensor_(data)(state, weight),
+          accumN,
+          nIn,
+          nOutSpatial,
+          nOutputPlane,
+          nPsum);
   }
-
   
   // free memorys
   THCTensor_(free)(state, input_n);
