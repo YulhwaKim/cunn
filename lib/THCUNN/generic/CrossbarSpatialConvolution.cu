@@ -80,11 +80,13 @@ void THNN_(CrossbarSpatialConvolution_updateoutput)(
   
   // Params:
   long nInputPlane = weight->size[1]/(kH*kW);
+  long nIn = weight->size[1];
   long nOutputPlane = weight->size[0];
   long inputWidth = input->size[3];
   long inputHeight = input->size[2];
   long outputWidth = (inputWidth + 2*padW - kW) / dW + 1;
   long outputHeight = (inputHeight + 2*padH - kH) / dH + 1;
+  long nOutSpatial = outputWidth * outputHeight;
   long batchSize = input->size[0];
   long nPsum = weight->size[1] / accumN;
   //Check if nPsum is valid
