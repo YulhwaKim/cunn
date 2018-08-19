@@ -9,10 +9,11 @@ void THNN_(VariationModeling_updateOutput)(
           THCTensor *output,
           THCTensor *input,
           THCTensor *ptable,
-          int accumN,
-          THCTensor *ref) // ref is for debugging
+          int accumN)
+          // THCTensor *) // ref is for debugging
 {
-  THCUNN_assertSameGPU(state, 4, output, input, ptable, ref);
+//   THCUNN_assertSameGPU(state, 4, output, input, ptable, ref);
+  THCUNN_assertSameGPU(state, 3, output, input, ptable);
   
   // get parameters
   int ndims = THCTensor_(nDimension)(state,input);
@@ -53,8 +54,8 @@ void THNN_(VariationModeling_updateOutput)(
           THCTensor_(data)(state, ptable),
           nRow,
           nCol,
-          accumN,
-          THCTensor_(data)(state, ref));
+          accumN);
+//           THCTensor_(data)(state, ref));
   
   // error checking
   cudaError errcode = cudaGetLastError();
