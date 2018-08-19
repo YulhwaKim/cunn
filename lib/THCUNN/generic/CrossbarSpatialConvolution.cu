@@ -42,7 +42,7 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
   THCUNN_check_dim_size(state, input, ndim, dimf, nInputPlane); 
 }
 
-void THNN_(CrossbarSpatialConvolution_updateoutput)(
+void THNN_(CrossbarSpatialConvolution_updateOutput)(
            THCState *state,
            THCTensor *input,
            THCTensor *output,
