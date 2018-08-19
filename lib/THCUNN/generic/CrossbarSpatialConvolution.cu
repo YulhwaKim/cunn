@@ -2,7 +2,7 @@
 #define THC_GENERIC_FILE "generic/CrossbarSpatialConvolution.cu"
 #else
 
-static inline void THNN_(CrossbarSpatialConvolution_shapecheck)(
+static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
                          THCState *state,
                          THCTensor *input, THCTensor *weight,
                          int kH, int kW, int dH, int dW, int padH, int padW){
