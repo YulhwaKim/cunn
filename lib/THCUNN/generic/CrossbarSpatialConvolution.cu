@@ -24,7 +24,7 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
     dimw++;
   }
   
-  THCUNN_argcheck(state, ndim == 3 || ndim == 4, 2, input,
+  THCUNN_argCheck(state, ndim == 3 || ndim == 4, 2, input,
                  "3D or 4D input tensor expected but got: %s");
   
   long nInputPlane = weight->size[1] / (kH * kW);
