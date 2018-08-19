@@ -6,8 +6,8 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
                          THCState *state,
                          THCTensor *input, THCTensor *weight,
                          int kH, int kW, int dH, int dW, int padH, int padW){
-//   THArgCheck(kW > 0 && kH > 0, 9,
-//             "kernel size should be greater than zero, but got kH: %d kW: %d", kH, kW);
+  THArgCheck(kW > 0 && kH > 0, 9,
+            "kernel size should be greater than zero, but got kH: %d kW: %d", kH, kW);
 //   THArgCheck(dW > 0 && dH > 0, 11,
 //             "stride should be greater than zero, but got dH: %d dW: %d", dH, dW);
 //   THArgCheck(state, weight->nDimension == 2 || weight->nDimension == 4, 5, weight,
