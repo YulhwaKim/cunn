@@ -9,7 +9,7 @@
 
 // Shape of data :  OUT (nOUtputPlane, nOutSpatial, nPsum); IN (nIn, nOutSpatial); W (nOutputPlane, nIn)
 template <typename T, typename AccumT>
-__global__ void cunn_CrossbarSpatialConvolution_updateOutput_kernel(
+__global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
   T *OUT, T *IN, T *W, int accumN, long nIn, long nOutSpatial, long nOutputPlane, long nPsum)
 {
   // index of output matrix
