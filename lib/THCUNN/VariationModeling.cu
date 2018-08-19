@@ -7,7 +7,7 @@
 
 template <typename T>
 __global__ void cunn_VariationModeling_updateOutput_kernel(
-  T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN, T *REF) // REF is for debugging
+  T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN)//, T *REF) // REF is for debugging
 {
   // index of data 
   int INcol = blockIdx.x * blockDim.x + threadIdx.x;
@@ -52,8 +52,8 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
     int value = ScalarConvert<T, int>::to(IN[INidx]);
     int rowIdx = (value + accumN) / 2;
     // STEP2. generate reference point
-    T refpoint = REF[INidx];
-    // T refpoint = rand()/(T)RAND_MAX;
+//     T refpoint = REF[INidx];
+    T refpoint = rand()/(T)RAND_MAX;
     // STEP3. find the column index of probability table and change the data
     for(int j=0; j<nCol; j++) {
       T prob = PTABLEs[rowIdx*nCol + j];
