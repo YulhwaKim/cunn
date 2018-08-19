@@ -4,15 +4,13 @@
 #include "SharedMem.cuh"
 
 // libraries for random number generation
-#include <stdlib.h>
-#include <time.h>
 #include <curand_kernel.h>
 
 #define BLOCK_SIZE 32
 
 template <typename T>
 __global__ void cunn_VariationModeling_updateOutput_kernel(
-  T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN, long long seed)//, T *REF) // REF is for debugging
+  T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN)//, T *REF) // REF is for debugging
 {
   // index of data 
   int INcol = blockIdx.x * blockDim.x + threadIdx.x;
@@ -20,7 +18,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   
   // initialize curand
   curandState s;
-  curand_init(seed, INcol, INrow, &s);
+  curand_init(clock64(), INcol, INrow, &s);
   
   // thread id
   int tx = threadIdx.x;
