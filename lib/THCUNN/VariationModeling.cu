@@ -3,6 +3,10 @@
 #include "THCHalfAutoNumerics.cuh"
 #include "SharedMem.cuh"
 
+// libraries for random number generation
+#include <stdlib.h>
+#include <time.h>
+
 #define BLOCK_SIZE 32
 
 template <typename T>
@@ -46,6 +50,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   
   // each thread models variation on given 2D matrix
   // thus, have to repeat on z-dim elements
+  srand(time(NULL));
   for(long i=0; i<zdim; i++) {
    // STEP1. get data and row index of probability table
     long INidx = i*xdim*ydim + INrow*xdim + INcol;
