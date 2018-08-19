@@ -40,7 +40,8 @@ __global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
       // do the accumulation
       temp += INs[ty][j] * Ws[j][tx];
-      printf("INs: %f, Ws: %f, temp: %f\n", INs[ty][j],  Ws[j][tx], temp);
+      if((Wrow < nOutputPlane) && (INcol < nOutSpatial) && (OUTcol < nPsum))
+        printf("INs: %f, Ws: %f, temp: %f\n", INs[ty][j],  Ws[j][tx], temp);
       accumCount += 1;
       if(accumCount >= accumN) {
         // update outputs
