@@ -67,7 +67,7 @@ void THNN_(CrossbarSpatialConvolution_updateoutput)(
   }
   
   THNN_(CrossbarSpatialConvolution_shapeCheck)
-    (sate, input, weight, kH, kW, dH, dW, padH, padW);
+    (state, input, weight, kH, kW, dH, dW, padH, padW);
   
   // make input contiguous and 4D
   input = THCTensor_(newContiguous)(state, input);
