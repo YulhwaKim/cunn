@@ -142,7 +142,7 @@ void THNN_(CrossbarSpatialConvolution_updateoutput)(
   
   // Resize output
   if (batch == 0) {
-    THCTensor_(resize3d)(state, output, nOutputPlane, outputHeight, outputWidth, nPsum);
+    THCTensor_(resize4d)(state, output, nOutputPlane, outputHeight, outputWidth, nPsum);
     THCTensor_(resize3d)(state, input, nInputPlane, inputHeight, inputWidth);
   }
   THCTensor_(free)(state, input);
