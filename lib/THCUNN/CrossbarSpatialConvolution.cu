@@ -39,11 +39,12 @@ __global__ void cunn_CrossbarSpatialConvolution_updateOutput_kernel(
     // compute element-size multiplication
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
       // do the accumulation
-      temp += INs[][] * Ws[][];
+      temp += INs[ty][j] * Ws[j][tx];
       accumCount += 1;
       if(accumCount >= accumN) {
         // update outputs
-        if() {
+        if((Wrow < nOutputPlane) && (INcol < nOutSpatial) && (OUTcol < nPsum)) { // shut down kernels that are not in the range
+          OUT[Wrow*nOutSpatial*nPsum + INcol*nPsum + OUTcol] = ScalarConvert<AccumT, T>::to(temp);
         }
         // update or reset states
         OUTcol += 1; 
