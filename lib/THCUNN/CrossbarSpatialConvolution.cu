@@ -48,7 +48,7 @@ __global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
         }
         // update or reset states
         OUTcol += 1; 
-        temp = = 0;
+        temp = 0;
         accumCount = 0;
       }
     }
