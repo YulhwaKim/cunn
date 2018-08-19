@@ -91,11 +91,35 @@ void THNN_(CrossbarSpatialConvolution_updateoutput)(
   THArgCheck(nPsum > 0 && weight->size[1] == nPsum * accumN, 101,
             "Number of input per convolution should be divisible by accumN, but we got number of input: %ld, accumN: %d, nPsum: %ld",
              weight->size[1], accumN, nPsum);
+  
+  // Resize output
+  THCTensor_(resize5d)(state, output, batchSize, nOutputPlane, outputHeight, outputWidth, nPsum);
+  
+  // Resize temporary columns
+  THCTensor_(resize2d)(state, columns, nInputPlane*kW*kH, outputHeight*outputWidth);
+  
+  // Helpers
+  THCTensor *input_n = THCTensor_(new)(state);
+  THCTensor *output_n = THCTensor_(new)(state);
+  
+  // For each elt in batch, do:
+  for (long elt = 0; elt < batchSize; elt ++) {
+    // Matrix multiply per output:
+    THCTensor_(select)(state, input_n, input, 0, elt);
+    THCTensor_(select)(state, output_n, output, 0, elt);
+    
+    template <typename T, typename AccumT>
+__global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
+  T *OUT, T *IN, T *W, int accumN, long nIn, long nOutSpatial, long nOutputPlane, long nPsum)
+  }
 
   
   // free memorys
+  THCTensor_(free)(state, input_n);
+  THCTensor_(free)(state, output_n);
   if (freeWeight)
     THCTensor_(free)(state, weight);
+  
   // Resize output
   if (batch == 0) {
     THCTensor_(resize3d)(state, output, nOutputPlane, outputHeight, outputWidth, nPsum);
