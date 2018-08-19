@@ -44,8 +44,6 @@ void THNN_(VariationModeling_updateOutput)(
   // set dimension of block and grid
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid((xdim + threads.x - 1)/threads.x, (ydim + threads.y - 1)/threads.y); 
-
-  long long seed = (long long)time(NULL);
           
   cunn_VariationModeling_updateOutput_kernel<real><<<grid, threads, nRow*nCol*sizeof(real)>>>(
           THCTensor_(data)(state, output),
@@ -56,8 +54,7 @@ void THNN_(VariationModeling_updateOutput)(
           THCTensor_(data)(state, ptable),
           nRow,
           nCol,
-          accumN,
-          seed);
+          accumN);
 //           THCTensor_(data)(state, ref));
   
   // error checking
