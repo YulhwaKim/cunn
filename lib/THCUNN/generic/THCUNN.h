@@ -1551,7 +1551,7 @@ TH_API void THNN_(VariationModeling_updateOutput)(
           	int accumN,
           	THCTensor *ref);
 
-TH_API void THNN_(CrossbarSpatialConvolution_updateoutput)(
+TH_API void THNN_(CrossbarSpatialConvolution_updateOutput)(
            	THCState *state,
            	THCTensor *input,
            	THCTensor *output,
