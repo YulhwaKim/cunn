@@ -6,16 +6,21 @@
 // libraries for random number generation
 #include <stdlib.h>
 #include <time.h>
+#include <curand_kernel.h>
 
 #define BLOCK_SIZE 32
 
 template <typename T>
 __global__ void cunn_VariationModeling_updateOutput_kernel(
-  T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN)//, T *REF) // REF is for debugging
+  T *OUT, T *IN, long xdim, long ydim, long zdim, T *PTABLE, long nRow, long nCol, int accumN, long long seed)//, T *REF) // REF is for debugging
 {
   // index of data 
   int INcol = blockIdx.x * blockDim.x + threadIdx.x;
   int INrow = blockIdx.y * blockDim.y + threadIdx.y;
+  
+  // initialize curand
+  curandState = s;
+  curand_init(seed, INcol, INrow, &s);
   
   // thread id
   int tx = threadIdx.x;
@@ -58,7 +63,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
     int rowIdx = (value + accumN) / 2;
     // STEP2. generate reference point
 //     T refpoint = REF[INidx];
-    T refpoint = rand()/ScalarConvert<int, T>::to(RAND_MAX);
+    T refpoint = ScalarConvert<float, T>::to(curand_uniform(s));
     // STEP3. find the column index of probability table and change the data
     for(int j=0; j<nCol; j++) {
       T prob = PTABLEs[rowIdx*nCol + j];
