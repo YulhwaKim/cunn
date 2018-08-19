@@ -10,7 +10,7 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
             "kernel size should be greater than zero, but got kH: %d kW: %d", kH, kW);
   THArgCheck(dW > 0 && dH > 0, 11,
             "stride should be greater than zero, but got dH: %d dW: %d", dH, dW);
-  THArgCheck(state, weight->nDimension == 2 || weight->nDimension == 4, 5, weight,
+  THCUNN_argCheck(state, weight->nDimension == 2 || weight->nDimension == 4, 5, weight,
             "2D or 4D weight tensor expected, but got: %s");
   
   int ndim = input->nDimension;
