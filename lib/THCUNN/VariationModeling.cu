@@ -19,7 +19,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   int INrow = blockIdx.y * blockDim.y + threadIdx.y;
   
   // initialize curand
-  curandState = s;
+  curandState s;
   curand_init(seed, INcol, INrow, &s);
   
   // thread id
