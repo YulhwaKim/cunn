@@ -1,5 +1,109 @@
 #ifndef THC_GENERIC_FILE
-#define TCH_GENERIC_FILE "generic/CrossbarSpatialConvoluion.cu"
+#define THC_GENERIC_FILE "generic/CrossbarSpatialConvoluion.cu"
 #else
 
-static inline void THNN_()
+static inline void THNN_(CrossbarSpatialConvolution_shapecheck)(
+                         THCState *state,
+                         THCTensor *input, THCTensor *weight,
+                         int kH, int kW, int dH, int dW, int padH, int padW){
+  THArgCheck(kW > 0 && kH > 0, 9,
+            "kernel size should be greater than zero, but got kH: %d kW: %d", kH, kW);
+  THArgCheck(dW > 0 && dH > 0, 11,
+            "stride should be greater than zero, but got dH: %d dW: %d", dH, dW);
+  THArgCheck(state, weight->nDimension == 2 || weight->nDimension == 4, 5, weight,
+            "2D or 4D weight tensor expected, but got: %s");
+  
+  int ndim = input->nDimension;
+  int dimf = 0;
+  int dimh = 1;
+  int dimw = 2;
+  
+  if (ndim == 4) {
+    dimf++;
+    dimh++;
+    dimw++;
+  }
+  
+  THCUNN_argcheck(state, ndim == 3 || ndim == 4, 2, input,
+                 "3D or 4D input tensor expected but got: %s");
+  
+  long nInputPlane = weight->size[1] / (kH * kW);
+  long inputHeight = input->size[dimh];
+  long inputWidth = input->size[dimw];
+  long nOutputPlane = weight->size[0];
+  long outputHeight = (inputHeight + 2*padH - kH) / dH + 1;
+  long outputWidth = (inputWidth + 2*padW - kW) / dW + 1;
+  
+  if (outputWidth < 1 || outputHeight < 1)
+    THError("Given input size: (%d x %d x %d). "
+            "Calculated output size: (%d x %d x %d). Output size is too small", 
+             nInputPlane, inputHeight, inputWidth, nOutputPlane, outputHeight, outputWidth);
+  
+  THCUNN_check_dim_size(state, input, ndim, dimf, nInputPlane); 
+}
+
+void THNN_(CrossbarSpatialConvolution_updateoutput)(
+           THCState *state,
+           THCTensor *input,
+           THCTensor *output,
+           THCTensor *weight,
+           THCTensor *columns,
+           int accumN,
+           int kW, int kH,
+           int dW, int dH,
+           int padW, int padH) {
+  
+  THCUNN_assertSameGPU(state, 4, input, output, weight, columns);
+  THArgCheck(THCTensor_(isContiguous)(state, weight), 4,
+             "weight tensor has to be contiguous");
+  
+  // convert 4D weight into 2D weight
+  int freeWeight = 0;
+  if (weight->nDimension == 4) {
+    long s1 = weight->size[0];
+    long s2 = weight->size[1] * weight->size[2] * weight->size[3];
+    weight = THCTensor_(newWithStorage2d)(state, weight->storage, weight->storageOffset, s1, -1, s2, -1);
+    freeWeight = 1;
+  }
+  
+  THNN_(CrossbarSpatialConvolution_shapeCheck)
+    (sate, input, weight, kH, kW, dH, dW, padH, padW);
+  
+  // make input contiguous and 4D
+  input = THCTensor_(newContiguous)(state, input);
+  int batch = 1;
+  if (input->nDimension == 3) {
+    // Force batch
+    batch = 0;
+    THCTensor_(resize4d)(state, input, 1, input->size[0], input->size[1], input->size[2]);
+  }
+  
+  // Params:
+  long nInputPlane = weight->size[1]/(kH*kW);
+  long nOutputPlane = weight->size[0];
+  long inputWidth = input->size[3];
+  long inputHeight = input->size[2];
+  long outputWidth = (inputWidth + 2*padW - kW) / dW + 1;
+  long outputHeight = (inputHeight + 2*padH - kH) / dH + 1;
+  long batchSize = input->size[0];
+  long nPsum = weight->size[1] / accumN;
+  //Check if nPsum is valid
+  THArgCheck(nPsum > 0 && weight->size[1] == nPsum * accumN, 101,
+            "Number of input per convolution should be divisible by accumN, but we got number of input: %ld, accumN: %d, nPsum: %ld",
+             weight->size[1], accumN, nPsum);
+
+  
+  // free memorys
+  if (freeWeight)
+    THCTensor_(free)(state, weight);
+  // Resize output
+  if (batch == 0) {
+    THCTensor_(resize3d)(state, output, nOutputPlane, outputHeight, outputWidth, nPsum);
+    THCTensor_(resize3d)(state, input, nInputPlane, inputHeight, inputWidth);
+  }
+  THCTensor_(free)(state, input);
+  
+}
+
+
+#endif
