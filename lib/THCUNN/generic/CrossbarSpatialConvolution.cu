@@ -2,10 +2,10 @@
 #define THC_GENERIC_FILE "generic/CrossbarSpatialConvolution.cu"
 #else
 
-// static inline void THNN_(CrossbarSpatialConvolution_shapecheck)(
-//                          THCState *state,
-//                          THCTensor *input, THCTensor *weight,
-//                          int kH, int kW, int dH, int dW, int padH, int padW){
+static inline void THNN_(CrossbarSpatialConvolution_shapecheck)(
+                         THCState *state,
+                         THCTensor *input, THCTensor *weight,
+                         int kH, int kW, int dH, int dW, int padH, int padW){
 //   THArgCheck(kW > 0 && kH > 0, 9,
 //             "kernel size should be greater than zero, but got kH: %d kW: %d", kH, kW);
 //   THArgCheck(dW > 0 && dH > 0, 11,
@@ -40,7 +40,7 @@
 //              nInputPlane, inputHeight, inputWidth, nOutputPlane, outputHeight, outputWidth);
   
 //   THCUNN_check_dim_size(state, input, ndim, dimf, nInputPlane); 
-// }
+}
 
 void THNN_(CrossbarSpatialConvolution_updateoutput)(
            THCState *state,
@@ -66,8 +66,8 @@ void THNN_(CrossbarSpatialConvolution_updateoutput)(
     freeWeight = 1;
   }
   
-//   THNN_(CrossbarSpatialConvolution_shapeCheck)
-//     (state, input, weight, kH, kW, dH, dW, padH, padW);
+  THNN_(CrossbarSpatialConvolution_shapeCheck)
+    (state, input, weight, kH, kW, dH, dW, padH, padW);
   
   // make input contiguous and 4D
   input = THCTensor_(newContiguous)(state, input);
