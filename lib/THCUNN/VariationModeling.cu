@@ -58,7 +58,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
     int rowIdx = (value + accumN) / 2;
     // STEP2. generate reference point
 //     T refpoint = REF[INidx];
-    T refpoint = rand()/ScalarConvert<int, T>::RAND_MAX;
+    T refpoint = rand()/ScalarConvert<int, T>::to(RAND_MAX);
     // STEP3. find the column index of probability table and change the data
     for(int j=0; j<nCol; j++) {
       T prob = PTABLEs[rowIdx*nCol + j];
