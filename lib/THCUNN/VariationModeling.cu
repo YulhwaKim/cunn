@@ -18,7 +18,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   
   // initialize curand
   curandState s;
-  curand_init(clock64(), INcol, INrow, &s);
+  curand_init(clock64(), INcol, 0, &s);
   
   // thread id
   int tx = threadIdx.x;
