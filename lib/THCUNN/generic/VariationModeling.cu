@@ -35,8 +35,8 @@ void THNN_(VariationModeling_updateOutput)(
           
   // for debugging, print ptable
   real *temp = THCTensor_(data)(state, ptable);
-  for(long i=0; i<nRow; i++) {
-            for(long j=0; j<nCol; j++) {
+  for(int i=0; i<nRow; i++) {
+            for(int j=0; j<nCol; j++) {
                       printf("%.1f ", ScalarConvert<real, float>::to(temp[i*nCol+j]));
             }
             printf("\n");       
