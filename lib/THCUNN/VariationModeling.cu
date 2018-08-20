@@ -32,7 +32,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   SharedMem<T> smem;
   T *PTABLEs = smem.getPointer();
 
- printf("nRow: %ld, nCol: %ld\n", nRow, nCol);
+//  printf("nRow: %ld, nCol: %ld\n", nRow, nCol); //correct
   
   // move PTABLE into shared memory
   int col_iter = (nCol + blockDim.x - 1) / blockDim.x;
@@ -65,7 +65,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
     // STEP3. find the column index of probability table and change the data
     for(int j=0; j<nCol; j++) {
 //       T prob = PTABLEs[rowIdx*nCol + j];
-      T prob = PTABLE[rowIdx*nCol + j];
+      T prob = PTABLE[j*nRow + rowIdx];
 //       printf("rowIdx: %d, colIdx: %d, prob: %.2f\n", rowIdx, j, prob);
       if(((prob > 0) && (prob > refpoint)) || (j==nCol-1)) {
         // printf("transitionWindow: %ld , value: %d, rowIdx: %d, refpoint: %.1f, j: %d\n", transitionWindow, value, rowIdx, refpoint, j);
