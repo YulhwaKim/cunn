@@ -70,6 +70,8 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
       if(((prob > 0) && (prob > refpoint)) || (j==nCol-1)) {
         // printf("transitionWindow: %ld , value: %d, rowIdx: %d, refpoint: %.1f, j: %d\n", transitionWindow, value, rowIdx, refpoint, j);
         OUT[INidx] = ScalarConvert<int, T>::to(value + 2*(j - transitionWindow));
+        printf("value: %d, refpoint: %.2f, output: %.1f, table row: %d, table col: %d, prob: %.2f\n", 
+               value, refpoint, OUT[INidx], rowIdx, j, prob);
         break;
       }
     }
