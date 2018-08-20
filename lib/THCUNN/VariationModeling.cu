@@ -53,6 +53,9 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   
   // each thread models variation on given 2D matrix
   // thus, have to repeat on z-dim elements
+  int step = 2;
+  if (accumN == 1)
+    step = 1;
   for(long i=0; i<zdim; i++) {
    // STEP1. get data and row index of probability table
     long INidx = i*xdim*ydim + INrow*xdim + INcol;
@@ -68,7 +71,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
 //       printf("rowIdx: %d, colIdx: %d, prob: %.2f\n", rowIdx, j, prob);
       if(((prob > 0) && (prob > refpoint)) || (j==nCol-1)) {
         // printf("transitionWindow: %ld , value: %d, rowIdx: %d, refpoint: %.1f, j: %d\n", transitionWindow, value, rowIdx, refpoint, j);
-        OUT[INidx] = ScalarConvert<int, T>::to(value + 2*(j - transitionWindow));
+        OUT[INidx] = ScalarConvert<int, T>::to(value + step*(j - transitionWindow));
 //         printf("value: %d, refpoint: %.2f, output: %.1f, table row: %d, table col: %d, prob: %.2f\n", 
 //                value, refpoint, OUT[INidx], rowIdx, j, prob);
         break;
