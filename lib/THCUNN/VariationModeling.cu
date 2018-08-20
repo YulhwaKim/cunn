@@ -32,6 +32,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
   SharedMem<T> smem;
   T *PTABLEs = smem.getPointer();
 
+ printf("nRow: %ld, nCol: %ld\n", nRwo, nCol);
   
   // move PTABLE into shared memory
   int col_iter = (nCol + blockDim.x - 1) / blockDim.x;
