@@ -66,7 +66,7 @@ __global__ void cunn_VariationModeling_updateOutput_kernel(
     for(int j=0; j<nCol; j++) {
 //       T prob = PTABLEs[rowIdx*nCol + j];
       T prob = PTABLE[j*nRow + rowIdx];
-//       printf("rowIdx: %d, colIdx: %d, prob: %.2f\n", rowIdx, j, prob);
+      printf("rowIdx: %d, colIdx: %d, prob: %.2f\n", rowIdx, j, prob);
       if(((prob > 0) && (prob > refpoint)) || (j==nCol-1)) {
         // printf("transitionWindow: %ld , value: %d, rowIdx: %d, refpoint: %.1f, j: %d\n", transitionWindow, value, rowIdx, refpoint, j);
         OUT[INidx] = ScalarConvert<int, T>::to(value + 2*(j - transitionWindow));
