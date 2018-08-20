@@ -34,13 +34,13 @@ void THNN_(VariationModeling_updateOutput)(
   long nCol = THCTensor_(size)(state, ptable, 1);
           
   // for debugging, print ptable
-  real *temp = THCTensor_(data)(state, ptable);
-  for(int i=0; i<nRow; i++) {
-            for(int j=0; j<nCol; j++) {
-                      printf("%.1f ", ScalarConvert<real, float>::to(temp[i*nCol+j]));
-            }
-            printf("\n");       
-  }
+//   real *temp = THCTensor_(data)(state, ptable);
+//   for(int i=0; i<nRow; i++) {
+//             for(int j=0; j<nCol; j++) {
+//                       printf("%.1f ", ScalarConvert<real, float>::to(temp[i*nCol+j]));
+//             }
+//             printf("\n");       
+//   }
 
   // resize output and make input continuous
   THCTensor_(resizeAs)(state, output, input);
