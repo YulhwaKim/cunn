@@ -63,7 +63,8 @@ void THNN_(VariationModeling_updateOutput)(
   // set dimension of block and grid
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid((xdim + threads.x - 1)/threads.x, (ydim + threads.y - 1)/threads.y); 
-          
+ 
+  printf("start variation modeling kernel\n");
 //   cunn_VariationModeling_updateOutput_kernel<real><<<grid, threads, nRow*nCol*sizeof(real)>>>(
   cunn_VariationModeling_updateOutput_kernel<real><<<grid, threads>>>(
           THCTensor_(data)(state, output),
