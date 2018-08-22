@@ -40,11 +40,13 @@ void THNN_(VariationModeling_updateOutput)(
            THCTensor_(size)(state, input, 3);
   }
   else if (ndims == 5) {
+    printf("ndims == 5\n");
     zdim = THCTensor_(size)(state, input, 0);
     ydim = THCTensor_(size)(state, input, 1);
     xdim = THCTensor_(size)(state, input, 2) * 
            THCTensor_(size)(state, input, 3) * 
            THCTensor_(size)(state, input, 4);
+    printf("xdim: %ld, ydim: %ld, zdim: %ld\n", xdim, ydim, zdim);
   }
   
   long nRow = THCTensor_(size)(state, ptable, 0);
