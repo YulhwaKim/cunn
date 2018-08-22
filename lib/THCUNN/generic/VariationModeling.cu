@@ -77,6 +77,7 @@ void THNN_(VariationModeling_updateOutput)(
           nCol,
           accumN);
 //           THCTensor_(data)(state, ref));
+  printf("end kernel\n");
   
   // error checking
   cudaError errcode = cudaGetLastError();
