@@ -40,7 +40,7 @@ __global__ void cunn_CrossbarLinearWvar_updateOutput_kernel(
     // compute element-size multiplication
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
       // multiplication
-      AccumT temp = INs[ty][j] * Ws[j][tx];
+      T temp = INs[ty][j] * Ws[j][tx];
       // Variation modeling
       temp = (temp > 0)? temp + VarPs[j][tx] : temp + VarMs[j][tx];
       // Accumulation
