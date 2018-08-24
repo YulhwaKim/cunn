@@ -1562,4 +1562,13 @@ TH_API void THNN_(CrossbarSpatialConvolution_updateOutput)(
            	int dW, int dH,
            	int padW, int padH);
 
+TH_API void THNN_(CrossbarLinearWvar_updateOutput)(
+          	THCState *state,
+          	THCTensor *output,
+          	THCTensor *input,
+          	THCTensor *weight,
+          	THCTensor *VarP,
+          	THCTensor *VarM,
+          	int accumN);
+
 #endif
