@@ -6,7 +6,7 @@
 #define BLOCK_SIZE 16
 
 template <typename T, typename AccumT>
-__global__ void cunn_CrossbarCompute_updateOutput_kernel(
+__global__ void cunn_CrossbarLinearWvar_updateOutput_kernel(
   T *OUT, T *IN, T *W, T *VarP, T *VarM, int accumN, long nBatch, long nIn, long nOut)
 {
   // index of output matrix
