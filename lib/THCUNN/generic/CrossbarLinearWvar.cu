@@ -19,7 +19,6 @@ void THNN_(CrossbarLinearWvar_updateOutput)(
   long nframe = 0;
   long nIn = 0;
   long nOut = 0;
-  long nPsum = 0;
           
   // check if BLOCK_SIZE is properly set
 //   int check = BLOCK_SIZE;
