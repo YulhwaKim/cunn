@@ -31,7 +31,6 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
   AccumT psum = 0;
   AccumT output_temp = 0;
   unsigned int accumCount = 0;
-  long OUTcol = 0;
   long i = 0;
   while(i < nIn){
     // copy the data from global memory to shared memory
