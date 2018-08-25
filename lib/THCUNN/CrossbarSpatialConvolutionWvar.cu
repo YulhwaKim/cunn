@@ -54,7 +54,7 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
         // quantize psum
         psum = (accumN==1)? roundf(psum) : roundf(psum/2)*2;
         // update output_temp
-        output_temp += Scalarconvert<AccumT, T>::to(psum);
+        output_temp += ScalarConvert<AccumT, T>::to(psum);
         // update or reset states
         psum = 0;
         accumCount = 0;
