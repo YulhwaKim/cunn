@@ -10,7 +10,7 @@
 // Shape of data :  OUT (nOUtputPlane, nOutSpatial); IN (nIn, nOutSpatial); W (nOutputPlane, nIn)
 template <typename T, typename AccumT>
 __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
-  T *OUT, T *IN, T *W, T *VarP, T *VarM, int accumN, long nIn, long nOutSpatial, long nOutputPlane, long nPsum)
+  T *OUT, T *IN, T *W, T *VarP, T *VarM, int accumN, long nIn, long nOutSpatial, long nOutputPlane)
 {
   // index of output matrix
   int Wrow = blockIdx.x * blockDim.x + threadIdx.x;
