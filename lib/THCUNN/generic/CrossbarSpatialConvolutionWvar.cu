@@ -142,8 +142,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
           accumN,
           nIn,
           nOutSpatial,
-          nOutputPlane,
-          nPsum);
+          nOutputPlane);
   }
   
   // free memorys
