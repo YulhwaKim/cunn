@@ -1,5 +1,5 @@
 #ifndef THC_GENERIC_FILE
-#define THC_GENERIC_FILE "generic/CrossbarSpatialConvolutionWavr.cu"
+#define THC_GENERIC_FILE "generic/CrossbarSpatialConvolutionWvar.cu"
 #else
 
 static inline void THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)(
