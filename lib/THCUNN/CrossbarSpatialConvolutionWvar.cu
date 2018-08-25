@@ -7,10 +7,10 @@
 
 #define BLOCK_SIZE 16
 
-// Shape of data :  OUT (nOUtputPlane, nOutSpatial, nPsum); IN (nIn, nOutSpatial); W (nOutputPlane, nIn)
+// Shape of data :  OUT (nOUtputPlane, nOutSpatial); IN (nIn, nOutSpatial); W (nOutputPlane, nIn)
 template <typename T, typename AccumT>
-__global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
-  T *OUT, T *IN, T *W, int accumN, long nIn, long nOutSpatial, long nOutputPlane, long nPsum)
+__global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
+  T *OUT, T *IN, T *W, T *VarP, T *VarM, int accumN, long nIn, long nOutSpatial, long nOutputPlane, long nPsum)
 {
   // index of output matrix
   int Wrow = blockIdx.x * blockDim.x + threadIdx.x;
@@ -23,10 +23,13 @@ __global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
   // used BLOCK_SIZE as the TILE size
   __shared__ T INs[BLOCK_SIZE][BLOCK_SIZE];
   __shared__ T Ws[BLOCK_SIZE][BLOCK_SIZE];
+  __shared__ T VarPs[BLOCK_SIZE][BLOCK_SIZE];
+  __shared__ T VarMs[BLOCK_SIZE][BLOCK_SIZE];
   
   // each thread do the vector-vector multiplication
   // thus, have to repeat on size_vector(nIn) elements
-  AccumT temp = 0;
+  AccumT psum = 0;
+  AccumT output_temp = 0;
   unsigned int accumCount = 0;
   long OUTcol = 0;
   long i = 0;
@@ -34,32 +37,38 @@ __global__ void cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel(
     // copy the data from global memory to shared memory
     INs[ty][tx] = IN[(i+tx)*nOutSpatial + INcol];
     Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
+    VarPs[ty][tx] = VarP[Wrow*nIn + (i+ty)];
+    VarMs[ty][tx] = VarM[Wrow*nIn + (i+ty)];
     __syncthreads();
     
     // compute element-size multiplication
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
-      // do the accumulation
-//       AccumT prev_temp = temp;
-      temp += INs[ty][j] * Ws[j][tx];
-//       if((Wrow < nOutputPlane) && (INcol < nOutSpatial) && (OUTcol < nPsum))
-//         printf("INs: %f, Ws: %f, prev_temp: %f, temp: %f\n", INs[ty][j],  Ws[j][tx], prev_temp, temp);
+      // multiplication
+      T temp = INs[ty][j] * Ws[j][tx];
+      // Variation modeling
+      temp = (temp > 0)? temp + VarPs[j][tx] : temp + VarMs[j][tx];
+      // Accumulation
+      psum += temp;
       accumCount += 1;
+      // digitize psum
       if(accumCount >= accumN) {
-        // update outputs
-        if((Wrow < nOutputPlane) && (INcol < nOutSpatial) && (OUTcol < nPsum)) { // shut down kernels that are not in the range
-          OUT[Wrow*nOutSpatial*nPsum + INcol*nPsum + OUTcol] = ScalarConvert<AccumT, T>::to(temp);
-        }
+        // quantize psum
+        psum = (accumN==1)? roundf(psum) : roundf(psum/2)*2;
+        // update output_temp
+        output_temp += Scalarconvert<AccumT, T>::to(psum);
         // update or reset states
-        OUTcol += 1; 
-        temp = 0;
+        psum = 0;
         accumCount = 0;
       }
     }
     __syncthreads();
     i += BLOCK_SIZE;
   }
+  // update outputs
+  if((Wrow < nOutputPlane) && (INcol < nOutSpatial)) // shut down kernels that are not in the range
+    OUT[Wrow*nOutSpatial + INcol] = ScalarConvert<AccumT, T>::to(output_temp);
 }
 
 
-#include "generic/CrossbarSpatialConvolution.cu"
+#include "generic/CrossbarSpatialConvolutionWvar.cu"
 #include "THCGenerateFloatTypes.h"
