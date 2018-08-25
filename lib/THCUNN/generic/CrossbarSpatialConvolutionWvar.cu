@@ -1,10 +1,11 @@
 #ifndef THC_GENERIC_FILE
-#define THC_GENERIC_FILE "generic/CrossbarSpatialConvolution.cu"
+#define THC_GENERIC_FILE "generic/CrossbarSpatialConvolutionWavr.cu"
 #else
 
-static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
+static inline void THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)(
                          THCState *state,
-                         THCTensor *input, THCTensor *weight,
+                         THCTensor *input, THCTensor *weight, 
+                         THCTensor *VarP, THCTensor *VarM,
                          int kH, int kW, int dH, int dW, int padH, int padW){
   THArgCheck(kW > 0 && kH > 0, 9,
             "kernel size should be greater than zero, but got kH: %d kW: %d", kH, kW);
@@ -12,6 +13,13 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
             "stride should be greater than zero, but got dH: %d dW: %d", dH, dW);
   THCUNN_argCheck(state, weight->nDimension == 2 || weight->nDimension == 4, 5, weight,
             "2D or 4D weight tensor expected, but got: %s");
+  // check if every weight has VarP and VarM
+  THArgCheck((THCTensor_(nElement)(state, weight) == THCTensor_(nElement)(state, VarP)) && 
+	     (THCTensor_(nElement)(state, weight) == THCTensor_(nElement)(state, VarM)), 102,
+	     "nElement of weight and VarP / VarM should be the same, but weight: %d VarP: %d, VarM: %d", 
+	      THCTensor_(nElement)(state, weight), 
+	      THCTensor_(nElement)(state, VarP),
+	      THCTensor_(nElement)(state, VarM));
   
   int ndim = input->nDimension;
   int dimf = 0;
@@ -42,18 +50,20 @@ static inline void THNN_(CrossbarSpatialConvolution_shapeCheck)(
   THCUNN_check_dim_size(state, input, ndim, dimf, nInputPlane); 
 }
 
-void THNN_(CrossbarSpatialConvolution_updateOutput)(
+void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
            THCState *state,
            THCTensor *input,
            THCTensor *output,
            THCTensor *weight,
            THCTensor *columns,
+           THCTensor *VarP,
+           THCTensor *VarM,
            int accumN,
            int kW, int kH,
            int dW, int dH,
            int padW, int padH) {
   
-  THCUNN_assertSameGPU(state, 4, input, output, weight, columns);
+  THCUNN_assertSameGPU(state, 6, input, output, weight, columns, VarP, VarM);
   THArgCheck(THCTensor_(isContiguous)(state, weight), 4,
              "weight tensor has to be contiguous");
   
@@ -66,8 +76,8 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
     freeWeight = 1;
   }
   
-  THNN_(CrossbarSpatialConvolution_shapeCheck)
-    (state, input, weight, kH, kW, dH, dW, padH, padW);
+  THNN_(CrossbarSpatialConvolutionWvar_shapeCheck)
+    (state, input, weight, VarP, VarM, kH, kW, dH, dW, padH, padW);
   
   // make input contiguous and 4D
   input = THCTensor_(newContiguous)(state, input);
@@ -95,7 +105,7 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
              weight->size[1], accumN, nPsum);
   
   // Resize output
-  THCTensor_(resize5d)(state, output, batchSize, nOutputPlane, outputHeight, outputWidth, nPsum);
+  THCTensor_(resize4d)(state, output, batchSize, nOutputPlane, outputHeight, outputWidth);
   
   // Resize temporary columns
   THCTensor_(resize2d)(state, columns, nInputPlane*kW*kH, outputHeight*outputWidth);
@@ -123,10 +133,12 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
     );
     
     // Execute the kernel
-    cunn_CrossbarSpatialConvolution_updateOutput_frame_kernel<real, accreal><<<grid, threads>>>(
+    cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel<real, accreal><<<grid, threads>>>(
           THCTensor_(data)(state, output_n),
           THCTensor_(data)(state, columns),
           THCTensor_(data)(state, weight),
+          THCTensor_(data)(state, VarP),
+          THCTensor_(data)(state, VarM),
           accumN,
           nIn,
           nOutSpatial,
@@ -142,7 +154,7 @@ void THNN_(CrossbarSpatialConvolution_updateOutput)(
   
   // Resize output
   if (batch == 0) {
-    THCTensor_(resize4d)(state, output, nOutputPlane, outputHeight, outputWidth, nPsum);
+    THCTensor_(resize3d)(state, output, nOutputPlane, outputHeight, outputWidth);
     THCTensor_(resize3d)(state, input, nInputPlane, inputHeight, inputWidth);
   }
   THCTensor_(free)(state, input);
