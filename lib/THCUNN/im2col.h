@@ -91,7 +91,8 @@ __global__ void im2col_custom_padding_kernel(const int n, const Dtype* data_im,
     }
   }
 }
- template <typename Dtype>
+
+template <typename Dtype>
 void im2col_custom_padding(cudaStream_t stream, const Dtype* data_im, const int padValue,
                            const int channels,
                            const int height, const int width,
