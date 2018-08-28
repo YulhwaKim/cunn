@@ -59,6 +59,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
            THCTensor *VarP,
            THCTensor *VarM,
            int accumN,
+	   int padValue
            int kW, int kH,
            int dW, int dH,
            int padW, int padH) {
@@ -125,9 +126,10 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
     THCTensor_(select)(state, output_n, output, 0, elt);
     
     // Extract columns:
-    im2col(
+    im2col_custom_padding(
       THCState_getCurrentStream(state),
       THCTensor_(data)(state, input_n),
+      padValue,
       nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
       1, 1, THCTensor_(data)(state, columns)
     );
