@@ -59,7 +59,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
            THCTensor *VarP,
            THCTensor *VarM,
            int accumN,
-	   int padValue
+	   int padValue,
            int kW, int kH,
            int dW, int dH,
            int padW, int padH) {
