@@ -162,9 +162,16 @@ void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
     }
 
     // Extract columns:
-    im2col(
+//     im2col(
+//       THCState_getCurrentStream(state),
+//       THCTensor_(data)(state, input_n),
+//       nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
+//       1, 1, THCTensor_(data)(state, columns)
+//     );
+    im2col_custom_padding(
       THCState_getCurrentStream(state),
       THCTensor_(data)(state, input_n),
+      padValue,
       nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
       1, 1, THCTensor_(data)(state, columns)
     );
