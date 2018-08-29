@@ -86,7 +86,7 @@ __global__ void im2col_custom_padding_kernel(const int n, const Dtype* data_im,
         int w = w_in + j * dilation_w;
         *data_col = (h >= 0 && w >= 0 && h < height && w < width) ?
           data_im[i * dilation_h * width + j * dilation_w] : ScalarConvert<int, Dtype>::to(padValue);
-        printf("%.1f ", *data_col);
+//         printf("%.1f ", *data_col);
         data_col += height_col * width_col;
       }
     }
@@ -108,7 +108,7 @@ void im2col_custom_padding(cudaStream_t stream, const Dtype* data_im, const int 
                   / stride_w + 1;
   int num_kernels = channels * height_col * width_col;
   // Launch
-  printf("\n padValue : %d \n", padValue);
+//   printf("\n padValue : %d \n", padValue);
   im2col_custom_padding_kernel <<<GET_BLOCKS(num_kernels), CUDA_NUM_THREADS, 0, stream>>> (
       num_kernels, data_im, padValue, height, width, ksize_h, ksize_w,
       pad_h, pad_w, stride_h, stride_w,
