@@ -39,6 +39,8 @@ __global__ void cunn_CrossbarLinearWvar_updateOutput_kernel(
     
     // compute element-size multiplication
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
+      if (i * BLOCK_SIZE + j >= nIn) // finish accumulation on the end point of the matrix
+        break;
       // multiplication
       T temp = INs[ty][j] * Ws[j][tx];
       // Variation modeling
