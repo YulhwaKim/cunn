@@ -134,11 +134,11 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
       1, 1, THCTensor_(data)(state, columns)
     );
     
-    real* columns_real = THCTensor_(data)(state, columns);
-    printf("\n print columns_real \n");
-    for (int pi=0; pi< nInputPlane*kW*kH*outputHeight*outputWidth; pi++) {
-	    printf("%.1f ", ScalarConvert<real, accreal>::to(columns_real[pi]));
-    }
+//     real* columns_real = THCTensor_(data)(state, columns);
+//     printf("\n print columns_real \n");
+//     for (int pi=0; pi< nInputPlane*kW*kH*outputHeight*outputWidth; pi++) {
+// 	    printf("%.1f ", ScalarConvert<real, accreal>::to(columns_real[pi])); // Segmentation fault (core dumped)
+//     }
 	  
     // Execute the kernel
     cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel<real, accreal><<<grid, threads>>>(
