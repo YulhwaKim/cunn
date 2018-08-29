@@ -45,15 +45,11 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
       if (i + j >= nIn) {// finish accumulation on the end point of the matrix
         // digitaize psum for remained accumulation
         if (accumCount > 0) { 
-          // quantize psum
-          if (accumN == 1) 
-            psum = (psum >= 0)? 1 : -1;
-          else {
-            psum = roundf(psum/2)*2;
-            // clamping
-            psum = (psum > accumN)? accumN : psum;
-            psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
-          }
+          // quantize psum (no accumN==1 case here)
+          psum = roundf(psum/2)*2;
+          // clamping
+          psum = (psum > accumN)? accumN : psum;
+          psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
           // update output_temp
           output_temp += ScalarConvert<AccumT, T>::to(psum);
         }
