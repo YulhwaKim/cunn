@@ -137,7 +137,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
     real* columns_real = THCTensor_(data)(state, columns);
     printf("\n print columns_real \n");
     for (int pi=0; pi< nInputPlane*kW*kH*outputHeight*outputWidth; pi++) {
-	    printf("%.1f ", columns_real[pi]);
+	    printf("%.1f ", ScalarConvert<real, accreal>::to(columns_real[pi]));
     }
 	  
     // Execute the kernel
