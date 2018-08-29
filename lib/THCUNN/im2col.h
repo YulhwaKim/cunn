@@ -86,7 +86,7 @@ __global__ void im2col_custom_padding_kernel(const int n, const Dtype* data_im,
         int w = w_in + j * dilation_w;
         *data_col = (h >= 0 && w >= 0 && h < height && w < width) ?
           data_im[i * dilation_h * width + j * dilation_w] : ScalarConvert<int, Dtype>::to(padValue);
-        printf("%.1f ", data_im[i * dilation_h * width + j * dilation_w]);
+        printf("%.1f ", *data_col);
         data_col += height_col * width_col;
       }
     }
