@@ -44,7 +44,7 @@ __global__ void cunn_CrossbarLinearWvar_updateOutput_kernel(
       // multiplication
       T temp = INs[ty][j] * Ws[j][tx];
       // Variation modeling
-      temp = (temp > 0)? temp + VarPs[j][tx] : temp + VarMs[j][tx];
+      temp = (temp >= 0)? temp + VarPs[j][tx] : temp + VarMs[j][tx];
       // Accumulation
       psum += temp;
       accumCount += 1;
