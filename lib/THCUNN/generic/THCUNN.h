@@ -1585,4 +1585,43 @@ TH_API void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
            	int dW, int dH,
            	int padW, int padH);
 
+TH_API void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
+           THCState *state,
+           THCTensor *input,
+           THCTensor *output,
+           THCTensor *weight,
+           THCTensor *bias,
+           THCTensor *columns,
+           THCTensor *ones,
+           int padValue,
+           int kW, int kH,
+           int dW, int dH,
+           int padW, int padH);
+
+TH_API void THNN_(SpatialConvolutionMMCustomPadding_updateGradInput)(
+           THCState *state,
+           THCTensor *input,
+           THCTensor *gradOutput,
+           THCTensor *gradInput,
+           THCTensor *weight,
+           THCTensor *gradColumns,
+           THCTensor *ones,
+           int kW, int kH,
+           int dW, int dH,
+           int padW, int padH);
+
+void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
+           THCState *state,
+           THCTensor *input,
+           THCTensor *gradOutput,
+           THCTensor *gradWeight,
+           THCTensor *gradBias,
+           THCTensor *columns,
+           THCTensor *ones,
+           int padValue,
+           int kW, int kH,
+           int dW, int dH,
+           int padW, int padH,
+           accreal scale_);
+
 #endif
