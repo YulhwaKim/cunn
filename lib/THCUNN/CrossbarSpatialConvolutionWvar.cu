@@ -43,8 +43,8 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
     // compute element-size multiplication
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
       // multiplication
-      if((Wrow < nOutputPlane) && (INcol < nOutSpatial))
-        printf("%.1f ", INs[ty][j]);
+//       if((Wrow < nOutputPlane) && (INcol < nOutSpatial))
+//         printf("%.1f ", INs[ty][j]);
       T temp = INs[ty][j] * Ws[j][tx];
       // Variation modeling
       temp = (temp > 0)? temp + VarPs[j][tx] : temp + VarMs[j][tx];
@@ -62,6 +62,8 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
           psum = (psum > accumN)? accumN : psum;
           psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
         }
+         if((Wrow < nOutputPlane) && (INcol < nOutSpatial))
+            printf("%.1f / %.1f ", INs[ty][j], ScalarConvert<AccumT, T>::to(psum));
         // update output_temp
         output_temp += ScalarConvert<AccumT, T>::to(psum);
         // update or reset states
