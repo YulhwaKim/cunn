@@ -49,9 +49,8 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
       // multiplication
       T temp = INs[ty][j] * Ws[j][tx];
       // Variation modeling
-      printf("temp, before var: %.1f ", temp);
       temp = (temp > 0)? temp + VarPs[j][tx] : temp + VarMs[j][tx];
-      printf("after var: %.1f \n", temp);
+      printf("temp, before var: %.1f , after var: %.1f", INs[ty][j] * Ws[j][tx], temp);
       // Accumulation
       psum += temp;
       accumCount += 1;
