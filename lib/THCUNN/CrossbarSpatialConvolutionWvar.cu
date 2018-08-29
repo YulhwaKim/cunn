@@ -43,16 +43,6 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
     // compute element-size multiplication
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
       if (i + j >= nIn) {// finish accumulation on the end point of the matrix
-        // digitaize psum for remained accumulation
-        if (accumCount > 0) { 
-          // quantize psum (no accumN==1 case here)
-          psum = roundf(psum/2)*2;
-          // clamping
-          psum = (psum > accumN)? accumN : psum;
-          psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
-          // update output_temp
-          output_temp += ScalarConvert<AccumT, T>::to(psum);
-        }
         break;
       }
 //       if((Wrow < nOutputPlane) && (INcol < nOutSpatial))
@@ -88,6 +78,16 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
     }
     __syncthreads();
     i += BLOCK_SIZE;
+  }
+  // digitize and accumulate for the remaining
+  if (accumCount > 0) { 
+    // quantize psum (no accumN==1 case here)
+    psum = roundf(psum/2)*2;
+    // clamping
+    psum = (psum > accumN)? accumN : psum;
+    psum = (psum < (-1)*accumN)? (-1)*accumN : psum;
+    // update output_temp
+    output_temp += ScalarConvert<AccumT, T>::to(psum);
   }
   // update outputs
   if((Wrow < nOutputPlane) && (INcol < nOutSpatial)) // shut down kernels that are not in the range
