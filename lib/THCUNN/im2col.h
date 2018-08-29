@@ -108,6 +108,7 @@ void im2col_custom_padding(cudaStream_t stream, const Dtype* data_im, const int 
                   / stride_w + 1;
   int num_kernels = channels * height_col * width_col;
   // Launch
+  printf("\n padValue : %d \n", padValue);
   im2col_custom_padding_kernel <<<GET_BLOCKS(num_kernels), CUDA_NUM_THREADS, 0, stream>>> (
       num_kernels, data_im, padValue, height, width, ksize_h, ksize_w,
       pad_h, pad_w, stride_h, stride_w,
