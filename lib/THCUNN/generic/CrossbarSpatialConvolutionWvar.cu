@@ -99,7 +99,7 @@ void THNN_(CrossbarSpatialConvolutionWvar_updateOutput)(
   long outputHeight = (inputHeight + 2*padH - kH) / dH + 1;
   long nOutSpatial = outputWidth * outputHeight;
   long batchSize = input->size[0];
-  long nPsum = ScalarConvert<float, long>::to(ceilf(1.0 * weight->size[1] / accumN));
+//   long nPsum = ScalarConvert<float, long>::to(ceilf(1.0 * weight->size[1] / accumN));
   //Check if nPsum is valid
 //   THArgCheck(nPsum > 0 && weight->size[1] == nPsum * accumN, 101,
 //             "Number of input per convolution should be divisible by accumN, but we got number of input: %ld, accumN: %d, nPsum: %ld",
