@@ -63,6 +63,7 @@ void THNN_(SpatialConvolutionMMCustomPadding_updateOutput)(
            THCTensor *bias,
            THCTensor *columns,
            THCTensor *ones,
+           int padValue,
            int kW, int kH,
            int dW, int dH,
            int padW, int padH) {
