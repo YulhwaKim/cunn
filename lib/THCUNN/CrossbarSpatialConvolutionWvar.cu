@@ -43,6 +43,7 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
     // compute element-size multiplication
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
       // multiplication
+      printf("INs : %.1f\n", INs[ty][j]);
       T temp = INs[ty][j] * Ws[j][tx];
       // Variation modeling
       temp = (temp > 0)? temp + VarPs[j][tx] : temp + VarMs[j][tx];
