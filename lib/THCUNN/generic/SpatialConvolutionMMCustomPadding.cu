@@ -340,6 +340,7 @@ void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
            THCTensor *gradBias,
            THCTensor *columns,
            THCTensor *ones,
+           int padValue,
            int kW, int kH,
            int dW, int dH,
            int padW, int padH,
@@ -407,9 +408,16 @@ void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
     THCTensor_(select)(state, gradOutput_n, gradOutput, 0, elt);
 
     // Extract columns:
-    im2col(
+//     im2col(
+//       THCState_getCurrentStream(state),
+//       THCTensor_(data)(state, input_n),
+//       nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
+//       1, 1, THCTensor_(data)(state, columns)
+//     );
+    im2col_custom_padding(
       THCState_getCurrentStream(state),
       THCTensor_(data)(state, input_n),
+      padValue,
       nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
       1, 1, THCTensor_(data)(state, columns)
     );
