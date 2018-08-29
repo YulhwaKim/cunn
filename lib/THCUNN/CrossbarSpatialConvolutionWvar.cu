@@ -44,8 +44,8 @@ __global__ void cunn_CrossbarSpatialConvolutionWvar_updateOutput_frame_kernel(
     for(unsigned int j=0; j<BLOCK_SIZE; j++) {
       if (i * BLOCK_SIZE + j >= nIn) // finish accumulation on the end point of the matrix
         break;
-//       if((Wrow < nOutputPlane) && (INcol < nOutSpatial))
-//         printf("%.1f ", INs[ty][j]);
+      if((Wrow < nOutputPlane) && (INcol < nOutSpatial))
+        printf("%.1f ", INs[ty][j]);
       // multiplication
       T temp = INs[ty][j] * Ws[j][tx];
       // Variation modeling
