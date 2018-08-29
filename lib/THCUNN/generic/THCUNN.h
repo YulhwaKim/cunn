@@ -1610,7 +1610,7 @@ TH_API void THNN_(SpatialConvolutionMMCustomPadding_updateGradInput)(
            int dW, int dH,
            int padW, int padH);
 
-void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
+TH_API void THNN_(SpatialConvolutionMMCustomPadding_accGradParameters)(
            THCState *state,
            THCTensor *input,
            THCTensor *gradOutput,
