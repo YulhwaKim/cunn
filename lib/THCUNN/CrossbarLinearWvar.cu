@@ -43,7 +43,7 @@ __global__ void cunn_CrossbarLinearWvar_updateOutput_kernel(
     INs[ty][tx] = (IN_idx < size_IN)? IN[IN_idx] : IN[size_IN - 1];
     Ws[ty][tx] = (W_idx < size_W)? W[W_idx] : W[size_W - 1];
     VarPs[ty][tx] = (W_idx < size_W)? VarP[W_idx] : VarP[size_W - 1];
-    VarMs[ty][tx] = (W_idx < size_W)? VarM[W_idx] : VarM[size_w - 1];
+    VarMs[ty][tx] = (W_idx < size_W)? VarM[W_idx] : VarM[size_W- 1];
 //     INs[ty][tx] = IN[INrow*nIn + tx + i];
 //     Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
 //     VarPs[ty][tx] = VarP[Wrow*nIn + (i+ty)];
