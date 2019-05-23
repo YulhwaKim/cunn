@@ -12,6 +12,10 @@ __global__ void cunn_CrossbarLinearWvar_updateOutput_kernel(
   // index of output matrix
   int Wrow = blockIdx.x * blockDim.x + threadIdx.x;
   int INrow = blockIdx.y * blockDim.y + threadIdx.y;
+  
+  // size of IN & W
+  long size_IN = nBatch * nIn;
+  long size_W = nIn * nOut;
     
   // thread id
   int tx = threadIdx.x;
@@ -29,12 +33,21 @@ __global__ void cunn_CrossbarLinearWvar_updateOutput_kernel(
   AccumT output_temp = 0;
   unsigned int accumCount = 0;
   long i = 0;
+  long IN_idx = 0;
+  long W_idx = 0;
+  
   while(i < nIn){
     // copy the data from global memory to shared memory
-    INs[ty][tx] = IN[INrow*nIn + tx + i];
-    Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
-    VarPs[ty][tx] = VarP[Wrow*nIn + (i+ty)];
-    VarMs[ty][tx] = VarM[Wrow*nIn + (i+ty)];
+    IN_idx = INrow*nIn + tx + i;
+    W_idx = Wrow*nIn + (i+ty);
+    INs[ty][tx] = (IN_idx < size_IN)? IN[IN_idx] : 0;
+    Ws[ty][tx] = (W_idx < size_W)? W[W_idx] : 0;
+    VarPs[ty][tx] = (W_idx < size_W)? VarP[W_idx] : 0;
+    VarMs[ty][tx] = (W_idx < size_W)? VarM[W_idx] : 0;
+//     INs[ty][tx] = IN[INrow*nIn + tx + i];
+//     Ws[ty][tx] = W[Wrow*nIn + (i+ty)];
+//     VarPs[ty][tx] = VarP[Wrow*nIn + (i+ty)];
+//     VarMs[ty][tx] = VarM[Wrow*nIn + (i+ty)];
     __syncthreads();
     
     // compute element-size multiplication
